@@ -7,12 +7,11 @@ class VideoStream {
   private _rect: fabric.Rect | null;
 
   constructor(el: HTMLDivElement) {
-    if(!el.querySelector('canvas')||!el.querySelector('video')){
-        throw Error('Video or Canvas element not found in the container');
-        
+    if (!el.querySelector("canvas") || !el.querySelector("video")) {
+      throw Error("Video or Canvas element not found in the container");
     }
-    this._video = el.querySelector('video') as HTMLVideoElement;
-    this.canvas = new fabric.Canvas(el.querySelector('canvas'), {
+    this._video = el.querySelector("video") as HTMLVideoElement;
+    this.canvas = new fabric.Canvas(el.querySelector("canvas"), {
       width: this._video.width || 500,
       height: this._video.height || 500,
     });
@@ -69,14 +68,15 @@ class VideoStream {
     );
   }
 
-  captureImage(): string {
-    if (this._rect) {
-      this.canvas.remove(this._rect);
-    }
+  captureImage():
+    | { imageData: string; rectLeft: number; rectTop: number }
+    | undefined {
+    if (!this._rect) return;
+    const { left, top } = this._rect;
+    this.canvas.remove(this._rect);
     const dataURL = this.canvas.toDataURL();
-    console.log(dataURL);
 
-    return dataURL;
+    return { imageData: dataURL, rectLeft: left || 0, rectTop: top || 0 };
   }
 
   private createVideo() {
@@ -109,7 +109,7 @@ class VideoStream {
     const renderFrame = () => {
       if (this._videoStream) {
         this._videoStream.setElement(this._video);
-        this._videoStream.setCoords(); 
+        this._videoStream.setCoords();
       }
       this.canvas.renderAll();
       fabric.util.requestAnimFrame(renderFrame);

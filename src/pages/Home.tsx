@@ -1,10 +1,21 @@
 import React, { useEffect, useRef } from "react";
 import VideoStream from "../utils/VideoStream";
+import { useImageDataStore } from "../store";
+import { useNavigate } from "react-router-dom";
 
 function Home() {
+  const navigate = useNavigate();
   const containerRef = useRef(null);
   const canvasRef = useRef<VideoStream | null>(null);
-  const handleCapture = () => {};
+  const { setData } = useImageDataStore();
+
+  const handleCapture = () => {
+    const data = canvasRef.current?.captureImage();
+    if (data) {
+      setData(data);
+      navigate('/verification');
+    }
+  };
 
   useEffect(() => {
     if (!containerRef.current) return;
