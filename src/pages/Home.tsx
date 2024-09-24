@@ -23,11 +23,17 @@ function Home() {
   }, []);
 
   return (
-    <div ref={containerRef}>
-      <video width={400} height={400} />
+    
+    <div ref={containerRef} className="p-12 bg-white ">
+     <h2 className="text-3xl text-center text-blue-400 font-semibold mb-3">Take Selfie </h2>
+      <video width={400} height={400} style={{display:"none"}}/>
 
-      <canvas style={{ border: "1px solid" }} />
-      <button onClick={handleCapture}>Capture</button>
+      <canvas  />
+      <div className="w-full flex justify-center">
+
+      <button className="bg-orange-400 px-12  py-2  font-bold text-xl text-white mt-4 uppercase" onClick={handleCapture}>continue</button>
+      </div>
+
     </div>
   );
 }

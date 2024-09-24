@@ -1,4 +1,5 @@
 import { fabric } from "fabric";
+import { CaptureInterface } from "../types";
 
 class VideoStream {
   public canvas: fabric.Canvas;
@@ -12,8 +13,8 @@ class VideoStream {
     }
     this._video = el.querySelector("video") as HTMLVideoElement;
     this.canvas = new fabric.Canvas(el.querySelector("canvas"), {
-      width: this._video.width || 500,
-      height: this._video.height || 500,
+      width: this?._video?.width || 500,
+      height: this?._video?.height || 500,
     });
     this._videoStream = null;
     this._rect = null;
@@ -69,7 +70,7 @@ class VideoStream {
   }
 
   captureImage():
-    | { imageData: string; rectLeft: number; rectTop: number }
+    CaptureInterface
     | undefined {
     if (!this._rect) return;
     const { left, top } = this._rect;
