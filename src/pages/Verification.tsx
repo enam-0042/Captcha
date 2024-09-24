@@ -1,13 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import VideoStream from "../utils/VideoStream";
 import { useImageDataStore } from "../store";
 import Captcha from "../utils/Captcha";
 import { CaptchaOptionsInterface } from "../types";
+import Modal from "../components/Modal";
 
 const canvasOption: CaptchaOptionsInterface = {
-  canvasWidth: 400,
-  canvasHeight: 400,
+  canvasWidth: 500,
+  canvasHeight: 500,
   rows: 5,
   cols: 5,
   boxSize: 40,
@@ -20,31 +20,42 @@ const shapes = ["circle", "rectangle", "triangle"];
 const shape = shapes[Math.floor(Math.random() * shapes.length)];
 
 function Verification() {
- 
   const navigate = useNavigate();
+
   const containerRef = useRef(null);
   const captchaRef = useRef<Captcha | null>(null);
+
+  const [seemsBotModal, toggleBotModal] = useState(false);
+  const [modalOpen, toggleModal] = useState(false);
+  const [isValidated, setIsValidated] = useState(false);
   const [isReverify, setIsReverify] = useState(false);
+
   const { data, resetData } = useImageDataStore();
-  const verify = () => {
-    // set(true);
+
+  const handleBack = () => {
+    resetData();
   };
 
   const detectedBot = () => {
-    alert("Bot Detected");
+    if (isValidated) return;
+    toggleBotModal(true);
   };
+
   const reVerify = () => {
-    // resetData();
     captchaRef.current?.reDraw();
     setIsReverify(false);
+  };
 
-  };
   const validate = () => {
-    // console.log('is validating');
-    const isValidated = captchaRef.current?.validate();
-    if (isValidated) alert("Youre validated");
-    else setIsReverify(true);
+    const isValid = captchaRef.current?.validate();
+    if (isValid) {
+      toggleModal(true);
+      setIsValidated(true);
+    } else {
+      setIsReverify(true);
+    }
   };
+
   useEffect(() => {
     if (!containerRef.current || !data.imageData) {
       navigate("/");
@@ -54,7 +65,6 @@ function Verification() {
       ...canvasOption,
       ...data,
       shape: shape,
-      verify: verify,
       detectedBot: detectedBot,
     });
 
@@ -65,40 +75,60 @@ function Verification() {
 
   return (
     <div ref={containerRef} className="p-12 bg-white ">
-      <h2 className="text-3xl text-center text-blue-400 font-semibold mb-3 uppercase">
+      <h2 className="text-3xl text-center text-[#0549A8] font-semibold mb-3 uppercase">
         Select {shape}
       </h2>
 
       <canvas />
       <div className="w-full flex justify-center">
-       {isReverify?(
-        <button className="bg-orange-400 px-12  py-2  font-bold text-xl text-white mt-4 uppercase" 
-        onClick={reVerify}>
-          {" "}
-          Verify Again
-        </button>
-       ):
-       (
+        {isReverify ? (
           <button
-          className="bg-orange-400 px-12  py-2  font-bold text-xl text-white mt-4 uppercase"
-          onClick={validate}
-        >
-          Validate
-        </button>
-       )
-       }
-      
-        
+            className="bg-[#DE9A0C] px-12  py-2  font-bold text-xl text-white mt-4 uppercase"
+            onClick={reVerify}
+          >
+            Verify Again
+          </button>
+        ) : (
+          <>
+            <button
+              className={`bg-[#DE9A0C] px-12 ${
+                isValidated ? "opacity-30" : ""
+              } py-2  font-bold text-xl text-white mt-4  uppercase`}
+              onClick={validate}
+              disabled={isValidated}
+            >
+              Validate
+            </button>
+          </>
+        )}
+
+        {isValidated && (
+          <button
+            className="bg-blue-400 px-12 ml-4 py-2  font-bold text-xl text-white mt-4 uppercase"
+            onClick={handleBack}
+          >
+            Back
+          </button>
+        )}
+
+        <Modal
+          isOpen={modalOpen}
+          onClose={() => {
+            toggleModal(false);
+          }}
+        />
+
+        <Modal
+          isOpen={seemsBotModal}
+          onClose={() => {
+            toggleBotModal(false);
+            reVerify();
+          }}
+          title="Seems You're Bot"
+          btnText="Reverify"
+        />
       </div>
     </div>
-
-    //     <div ref={containerRef}>
-    //       {/* <video width={400} height={400} /> */}
-    // <p>shape is {shape}</p>
-    //       <canvas style={{ border: "1px solid" }} />
-    //       {isVerified&&<p>You Are Verified</p> }
-    //       <button onClick={reVerify}>Verify Again</button>
-    //     </div>
   );
 }
 

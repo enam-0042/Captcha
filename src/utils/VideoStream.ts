@@ -11,11 +11,13 @@ class VideoStream {
     if (!el.querySelector("canvas") || !el.querySelector("video")) {
       throw Error("Video or Canvas element not found in the container");
     }
+
     this._video = el.querySelector("video") as HTMLVideoElement;
     this.canvas = new fabric.Canvas(el.querySelector("canvas"), {
       width: this?._video?.width || 500,
       height: this?._video?.height || 500,
     });
+
     this._videoStream = null;
     this._rect = null;
     this.init();
@@ -36,6 +38,7 @@ class VideoStream {
       stroke: "white",
       fill: "transparent",
     });
+
     this.canvas.add(this._rect);
     this.animateRect();
   }
@@ -54,6 +57,7 @@ class VideoStream {
     if (!this._rect) return;
 
     const { left, top } = this.getRandomPosition();
+
     this._rect.animate(
       {
         left,
@@ -69,17 +73,6 @@ class VideoStream {
     );
   }
 
-  captureImage():
-    CaptureInterface
-    | undefined {
-    if (!this._rect) return;
-    const { left, top } = this._rect;
-    this.canvas.remove(this._rect);
-    const dataURL = this.canvas.toDataURL();
-
-    return { imageData: dataURL, rectLeft: left || 0, rectTop: top || 0 };
-  }
-
   private createVideo() {
     this._videoStream = new fabric.Image(this._video, {
       left: 0,
@@ -88,6 +81,7 @@ class VideoStream {
       height: this._video.height,
       selectable: false,
     });
+
     this.canvas.add(this._videoStream);
     this._videoStream.moveTo(0);
   }
@@ -112,10 +106,20 @@ class VideoStream {
         this._videoStream.setElement(this._video);
         this._videoStream.setCoords();
       }
+
       this.canvas.renderAll();
       fabric.util.requestAnimFrame(renderFrame);
     };
     fabric.util.requestAnimFrame(renderFrame);
+  }
+
+  public captureImage(): CaptureInterface | undefined {
+    if (!this._rect) return;
+    const { left, top } = this._rect;
+    this.canvas.remove(this._rect);
+    const dataURL = this.canvas.toDataURL();
+
+    return { imageData: dataURL, rectLeft: left || 0, rectTop: top || 0 };
   }
 }
 
