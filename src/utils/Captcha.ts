@@ -1,7 +1,7 @@
-import { fabric } from "fabric"
+import { fabric } from 'fabric'
 
-import { CaptchaOptionsInterface } from "../types"
-const shapes = ["none", "circle", "rectangle", "triangle"]
+import { CaptchaOptionsInterface } from '../types'
+const shapes = ['none', 'circle', 'rectangle', 'triangle']
 const CLICK_LIMIT = 15
 interface ShapeInterfaceBase extends fabric.Object {
   shape: string
@@ -27,13 +27,13 @@ class Captcha {
   private _clickCounter: number
   private _misClick: number
   constructor(el: HTMLDivElement, options: CaptchaOptionsInterface) {
-    if (!el.querySelector("canvas")) {
-      throw Error("Video or Canvas element not found in the container")
+    if (!el.querySelector('canvas')) {
+      throw Error('Video or Canvas element not found in the container')
     }
-    this.canvas = new fabric.Canvas(el.querySelector("canvas"), {
+    this.canvas = new fabric.Canvas(el.querySelector('canvas'), {
       width: options.canvasWidth || 500,
       height: options.canvasHeight || 500,
-      hoverCursor: "default",
+      hoverCursor: 'default',
     })
 
     this.options = options
@@ -82,20 +82,20 @@ class Captcha {
           width: this.options.boxSize,
           height: this.options.boxSize,
           strokeWidth: 1,
-          stroke: "white",
-          fill: "rgba(0,0,0,.5)",
+          stroke: 'white',
+          fill: 'rgba(0,0,0,.5)',
           selectable: false,
         })
 
         this.canvas.add(rect)
         switch (this._shapes[counter]) {
-          case "circle":
+          case 'circle':
             this.drawCircle({ left, top, id: counter })
             break
-          case "triangle":
+          case 'triangle':
             this.drawTriangle({ left, top, id: counter })
             break
-          case "rectangle":
+          case 'rectangle':
             this.drawRectangle({ left, top, id: counter })
             break
         }
@@ -112,12 +112,12 @@ class Captcha {
 
     const circle = new fabric.Circle({
       radius: circleRadius,
-      fill: "rgba(255,255,255 , .8)",
+      fill: 'rgba(255,255,255 , .8)',
       left: centerX,
       top: centerY,
-      hoverCursor: "pointer",
+      hoverCursor: 'pointer',
       selectable: false,
-      shape: "circle",
+      shape: 'circle',
       id: `a-${id}`,
     } as ShapeType)
 
@@ -133,12 +133,12 @@ class Captcha {
     const triangle = new fabric.Triangle({
       width: triangleSize,
       height: triangleSize,
-      fill: "rgba(255,255,255 , .8)",
+      fill: 'rgba(255,255,255 , .8)',
       left: centerX,
       top: centerY,
-      hoverCursor: "pointer",
+      hoverCursor: 'pointer',
       selectable: false,
-      shape: "triangle",
+      shape: 'triangle',
       id: `a-${id}`,
     } as ShapeType)
     this.canvas.add(triangle)
@@ -153,12 +153,12 @@ class Captcha {
     const rectangle = new fabric.Rect({
       width: rectangleSize,
       height: rectangleSize,
-      fill: "rgba(255,255,255 , .8)",
+      fill: 'rgba(255,255,255 , .8)',
       left: centerX,
       top: centerY,
-      hoverCursor: "pointer",
+      hoverCursor: 'pointer',
       selectable: false,
-      shape: "rectangle",
+      shape: 'rectangle',
       id: `a-${id}`,
     } as ShapeType)
     this.canvas.add(rectangle)
@@ -166,9 +166,9 @@ class Captcha {
 
   private selectItem(options: fabric.IEvent<Event>, color: string) {
     if (options.target) {
-      options.target.set("fill", color)
+      options.target.set('fill', color)
       this.canvas.renderAll()
-      console.log("here")
+      console.log('here')
     }
   }
   public validate() {
@@ -181,13 +181,13 @@ class Captcha {
     return false
   }
   public reDraw() {
-    console.log("hello")
+    console.log('hello')
     this.canvas.clear()
     this.defaultAll()
     this.init()
   }
   private addEventListener() {
-    this.canvas.on("mouse:up", (options) => {
+    this.canvas.on('mouse:up', (options) => {
       this._clickCounter++
       const target = options.target as ShapeType
       console.log(this._clickCounter)
@@ -197,8 +197,8 @@ class Captcha {
       }
       if (target?.shape) {
         if (target?.shape === this.options.shape) {
-          this.selectItem(options, "rgba(120, 245, 66, .5)")
-          console.log("An object was clicked!", target.shape)
+          this.selectItem(options, 'rgba(120, 245, 66, .5)')
+          console.log('An object was clicked!', target.shape)
           this._elements = this._elements.filter((item) => item !== target?.id)
           if (this._elements.length === 0) {
             this.options?.verify()
@@ -207,7 +207,7 @@ class Captcha {
           return
         }
         this._misClick++
-        this.selectItem(options, "rgba(255, 0, 0, .5)")
+        this.selectItem(options, 'rgba(255, 0, 0, .5)')
         return
       }
     })
